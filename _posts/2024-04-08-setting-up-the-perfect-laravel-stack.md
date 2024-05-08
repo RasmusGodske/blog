@@ -6,7 +6,6 @@ image:
   path: assets/img/setting-up-the-perfect-laravel-stack/VILT-logo-meme.jpg
 ---
 
-![Tailwind CSS](assets/img/setting-up-the-perfect-laravel-stack/VILT-logo-meme.jpg)
 
 # Introduction
 Welcome to this comprehensive guide on setting up a VILT stack in VSCode. Whether you are an experienced web developer or just beginning to explore these technologies, this guide will streamline your development process, enabling you to focus more on creating robust web applications and less on setup and configuration. We will also leverage VSCode's DevContainer feature to ensure a consistent development environment across all project contributors. All you need to begin is Docker and VSCode installed on your machine. Let’s dive into what makes the VILT stack a powerful choice for modern web development.
