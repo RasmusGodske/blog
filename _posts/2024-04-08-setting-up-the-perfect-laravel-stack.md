@@ -30,12 +30,14 @@ Think of Vue.js, Inertia.js, Laravel, and Tailwind CSS as a superhero squad that
 3. [Setting up Laravel](#setting-up-laravel)
 4. [Installing Inertia.js](#installing-inertiajs)
 5. [Installing Tailwind CSS](#installing-tailwind-css) (Optional)
-6. [The cherry on top](#the-cherry-on-top) (Optional)
-
+6. [Adding Debugging Support](#adding-debugging-support) (Optional)
+7. [The cherry on top](#the-cherry-on-top) (Optional)
 
 # Prerequisites
 - [VSCode](https://code.visualstudio.com/)
+  - [Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - [Docker](https://www.docker.com/)
+
 
 *Yes that's it! You don't need to install PHP, Composer, Node.js, or any other dependencies on your machine. Everything will be installed in the DevContainer.*
 
@@ -54,7 +56,6 @@ touch .devcontainer/Dockerfile
 ### Step 2: Configure devcontainer.json
 This configuration will tell VSCode how to build and run our devcontainer.
 
-<!-- TODO: ADD THE NEW VERSION OF THE DEVCONTAINER -->
 ```json
 {
   "name": "Debian",
@@ -74,7 +75,6 @@ This configuration will tell VSCode how to build and run our devcontainer.
   ],
   "forwardPorts": [
     8080,
-
   ],
   "customizations": {
     "settings": {
@@ -82,8 +82,15 @@ This configuration will tell VSCode how to build and run our devcontainer.
     },
     "vscode": {
       "extensions": [
+        // Helps with tailwind css class completion
+        "bradlc.vscode-tailwindcss",
+
+        // Nice quality of life when it comes to vue
         "znck.vue",
-        "bradlc.vscode-tailwindcss"
+        "Vue.volar",
+
+        // Used for PHP debugging
+        "xdebug.php-debug"
       ]
     }
   },
@@ -133,7 +140,7 @@ RUN chmod -R 700 /home/vscode/project
 
 ### Step 4: Starting the DevContainer
 
-To start the devcontainer, open the command palette in VSCode by pressing `Ctrl+Shift+P` or and type `Remote-Containers: Rebuild and Reopen in Container`.
+To start the devcontainer, open the command palette in VSCode by pressing `Ctrl+Shift+P` and type `Dev Containers: Rebuild and Reopen in Container`.
 This will build and start the devcontainer.
 
 > Building the devcontainer for the first time might take a while as it needs to download all the necessary dependencies and tools.
@@ -196,6 +203,7 @@ sail up
 
 Next lets just quickly run our migrations to create the necessary tables in our database.
 
+In a new terminal run:
 ```bash
 sail artisan migrate
 ```
@@ -297,6 +305,7 @@ Next lets update `vite.config.js` with the following changes.
 ```js
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+
 // ----------------- Add the following --------------
 import vue from '@vitejs/plugin-vue';
 // --------------------------------------------------
@@ -411,8 +420,6 @@ Lets add a new method called `index` to the `DashboardController`.
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -538,7 +545,24 @@ Finally, lets make sure that our `app.css` file is importing the `resources/js/a
 
 Add the following line to the top of the file.
 ```js
-import '../css/app.css'
+import '../css/app.css' // Add this line
+
+import './bootstrap';
+
+import { createApp, h } from 'vue'
+import { createInertiaApp } from '@inertiajs/vue3'
+
+createInertiaApp({
+  resolve: name => {
+    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+    return pages[`./Pages/${name}.vue`]
+  },
+  setup({ el, App, props, plugin }) {
+    createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .mount(el)
+  },
+})
 ```
 {: file='resources/js/app.js'}
 
@@ -575,6 +599,113 @@ sail npm run dev
 There we go! You have now successfully set up Tailwind CSS in your Laravel application. You can now start using Tailwind CSS classes in your Vue components.
 
 ![Tailwind CSS](assets/img/setting-up-the-perfect-laravel-stack/dashboard-with-tailwindcss.png)
+
+## Adding Debugging Support
+
+Obviously, you will run into errors while developing your application. To make it easier to debug these errors, we can add Xdebug support in our project. This will allow us to set breakpoints and step through our code to find the root cause of the issue.
+
+I got to admit, setting up Xdebug can be a bit tricky. My team and I have previously spent hours trying to get it to work, and it kept forgetting how we did it... So hopefully this guide will save you some time and effort and frustration.
+
+### Step 1: Update our `docker-compose.yml` file
+We need to configure our `laravel.test` service to connect to our Xdebug server, running within our DevContainer. To do this we need to modify the `XDEBUG_CONFIG` environment variable in our `docker-compose.yml` file.
+
+```yml
+services:
+    laravel.test:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.3
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.3/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-80}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+
+            # -------- Change from this --------
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            # -------- To this --------
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal client_port=9003 start_with_request=default idekey=VSCODE}'
+
+        ... # Other configurations
+```
+{: file='docker-compose.yml'}
+
+### Step 2: Create a `launch.json` file
+
+Next, we need to create a `./vscode/launch.json` file which will tell VSCode how to start our Xdebug server.
+
+```jsonc
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "🪲 Listen for Xdebug",
+          "type": "php",
+          "request": "launch",
+          "log":false,
+          "port": 9003,
+          "pathMappings": {
+              // The path where the project files are mounted within the containers running xdebug.
+              // we need to tell xdebug that the files are located in a different path
+              // than within the vscode workspace
+              "/var/www/html": "${workspaceFolder}"
+          }
+      }
+  ]
+}
+```
+{: file='.vscode/launch.json'}
+
+### Step 3: Update our .env file
+
+Finally, we need to update our `.env` file to enable Xdebug support.
+This can be done by adding the following line to the `.env` file.
+
+This line tells XDebug to enable the `develop`, `debug`, `trace`, and `coverage` modes.
+
+```bash
+echo "SAIL_XDEBUG_MODE=\"develop,debug,trace,coverage\"" >> .env
+```
+
+I would also highly suggest that you add this to your `.env.example` file, so when other developers copy the .env.example file to .env they will also have Xdebug enabled by default. This will save you the poke on your shoulder asking why Xdebug is not working, so do yourself a favor and add it to the `.env.example` file.
+
+```bash
+# OPTIONAL
+echo "SAIL_XDEBUG_MODE=\"develop,debug,trace,coverage\"" >> .env.example
+```
+
+### Step 4: Restart sail
+
+Finally, restart the development server by running the following command in the terminal.
+
+```bash
+sail down
+sail up
+```
+
+
+### Step 5: Start debugging
+
+Press `F5` in VSCode to start the Xdebug server. You can now set breakpoints and step through your code to find the root cause of the issue.
+
+Navigate to your `DashboardController` within `app/Http/Controllers` and set a breakpoint on the `index` method. Like so:
+
+![Xdebug](assets/img/setting-up-the-perfect-laravel-stack/dashboard-controller-break-point.png)
+
+Now visit [http://localhost:8080/dashboard](http://localhost:8080/dashboard) in your browser.
+
+Success! You should see that the execution stops at the breakpoint you set in the `index` method.
+
+![Xdebug](assets/img/setting-up-the-perfect-laravel-stack/dashboard-controller-break-point-triggered.png)
+
+
 
 
 
@@ -663,4 +794,23 @@ This will start the sail server, run the migrations, seed the database, and comp
 
 After this you are all set to start building your application. You can now start building your application using the VILT stack in VSCode.
 
-# Happy coding!
+
+## Last Words
+
+Congratulations! You have successfully set up a VILT stack in VSCode using DevContainer. You can now start building your application using the VILT stack in VSCode. This setup will save you a lot of time and effort in setting up your development environment. You can now focus on building your application and not worry about setting up your development environment.
+
+The result of this guide can be found in this [GitHub repository](https://github.com/RasmusGodske/laravel-vilt-stack-template) - feel free to clone it and start building your application.
+
+I hope you found this guide helpful. If you have any questions or feedback, feel free to reach out to me either on my [LinkedIn](https://www.linkedin.com/in/rasmusgodske/) or in the comment section below. I would love to hear your thoughts on this guide!
+
+
+**Happy coding!**
+
+
+
+**Changelog**:
+- Added a section on creating a bootstrap script to streamline the setup process
+- Updated `.devcontainer.json` with additional extensions
+- Added a section on setting up Xdebug for debugging purposes
+- Added Last Words section
+- Added link to github repository
