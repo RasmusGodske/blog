@@ -30,8 +30,9 @@ Think of Vue.js, Inertia.js, Laravel, and Tailwind CSS as a superhero squad that
 3. [Setting up Laravel](#setting-up-laravel)
 4. [Installing Inertia.js](#installing-inertiajs)
 5. [Installing Tailwind CSS](#installing-tailwind-css) (Optional)
-6. [Adding Debugging Support](#adding-debugging-support) (Optional)
-7. [The cherry on top](#the-cherry-on-top) (Optional)
+6. [Installing Ziggy](#installing-ziggy) (Optional)
+7. [Adding Debugging Support](#adding-debugging-support) (Optional)
+8. [The cherry on top](#the-cherry-on-top) (Optional)
 
 # Prerequisites
 - [VSCode](https://code.visualstudio.com/)
@@ -56,7 +57,7 @@ touch .devcontainer/Dockerfile
 ### Step 2: Configure devcontainer.json
 This configuration will tell VSCode how to build and run our devcontainer.
 
-```json
+```jsonc
 {
   "name": "Debian",
   "build": {
@@ -600,6 +601,116 @@ There we go! You have now successfully set up Tailwind CSS in your Laravel appli
 
 ![Tailwind CSS](assets/img/setting-up-the-perfect-laravel-stack/dashboard-with-tailwindcss.png)
 
+## Installing Ziggy
+
+
+### Step 1: Installing dependencies
+
+
+First lets install Ziggy
+```bash
+sail composer require tightenco/ziggy
+```
+
+
+### Step 2: Make route() available globally
+Since we will be using Ziggy's `route()` function A LOT, lets make it accessible everywhere.
+
+We do this by adding the Blade directive `@routes` to our `app.blade.php` file within `<head>`.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    @routes
+    @vite('resources/js/app.js')
+    @inertiaHead
+  </head>
+  ...
+</html>
+```
+{: file='resources/views/app.blade.php'}
+
+### Step 3: Make `ziggy-js` resolveable
+
+Before we can actually import `ziggy-js` in our frontend we need to tell the system where to locate it
+
+```js
+import path from 'path';      // <--- Add this
+
+export default defineConfig({
+    ...
+    // Add the following
+    resolve: {
+        alias: {
+            'ziggy-js': path.resolve('vendor/tightenco/ziggy'),
+        },
+    },
+    ...
+});
+```
+{: file='vite.config.js'}
+
+This tells the system `ziggy-js` can be found in our `vendor/tightenco/ziggy` directory, which was created previously when we installed the composer package: `tightenco/ziggy`.
+The neat thing about that is that we don't need to keep any extra node packages updated. Pretty cool right?
+
+
+### Step 4: Include Ziggy vue pligin
+
+Next we need to update our `resources/js/app.js` to make use of the Vue plugin which Ziggy provides out of the box.
+
+```js
+import './bootstrap';
+import '../css/app.css'
+
+import { createApp, h } from 'vue'
+import { createInertiaApp } from '@inertiajs/vue3'
+
+import { ZiggyVue } from 'ziggy-js';        // <--- Import ZiggyVue Plugin
+
+createInertiaApp({
+  resolve: name => {
+    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+    return pages[`./Pages/${name}.vue`]
+  },
+  setup({ el, App, props, plugin }) {
+    createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .use(ZiggyVue)                         // <--- Tell Vue to use it
+      .mount(el)
+  },
+})
+```
+
+
+### Step 5: Example
+
+Well done, you have added Ziggy to your perfect Laravel project. Lets quickly dive into how we can use it!
+
+Ziggy lets us do awesome stuff such as easily generate urls to other parts of our application. By using `route()` with the name of a route it will return the complete url.
+
+First we need to make sure we have a route to test with. Lets add a name to our `/dashboard` route. To do this navigate to `routes/web.php`.
+
+This is easily done by adding `->name('dashboard')` to our route entry.
+
+```php
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index']);                    # Change from this
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard'); # To this
+```
+{: file='routes/web.php'}
+
+We can now generate urls to this route by simply using `route('dashboard')`.
+
+```vue
+<template>
+  <a :href="route('dashboard')">Take me to the dashboard!</a>
+</template>
+```
+
+To read more about how to use Ziggy, go to the official documentation here: [github.com/tighten/ziggy](https://github.com/tighten/ziggy?tab=readme-ov-file#route-function).
+
 ## Adding Debugging Support
 
 Obviously, you will run into errors while developing your application. To make it easier to debug these errors, we can add Xdebug support in our project. This will allow us to set breakpoints and step through our code to find the root cause of the issue.
@@ -814,3 +925,4 @@ I hope you found this guide helpful. If you have any questions or feedback, feel
 - Added a section on setting up Xdebug for debugging purposes
 - Added Last Words section
 - Added link to github repository
+- Added a a section about installing Ziggy
