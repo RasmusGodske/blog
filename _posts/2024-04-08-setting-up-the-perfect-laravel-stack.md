@@ -795,6 +795,7 @@ This will start the sail server, run the migrations, seed the database, and comp
 After this you are all set to start building your application. You can now start building your application using the VILT stack in VSCode.
 
 
+
 ## Last Words
 
 Congratulations! You have successfully set up a VILT stack in VSCode using DevContainer. You can now start building your application using the VILT stack in VSCode. This setup will save you a lot of time and effort in setting up your development environment. You can now focus on building your application and not worry about setting up your development environment.
@@ -803,6 +804,10 @@ The result of this guide can be found in this [GitHub repository](https://github
 
 I hope you found this guide helpful. If you have any questions or feedback, feel free to reach out to me either on my [LinkedIn](https://www.linkedin.com/in/rasmusgodske/) or in the comment section below. I would love to hear your thoughts on this guide!
 
+
+## What's next?
+
+- Fancy adding typescript support? If yes, you can find a guide here: [here](/posts/perfecting-laravel-typescript-for-better-bug-free-code).
 
 **Happy coding!**
 
