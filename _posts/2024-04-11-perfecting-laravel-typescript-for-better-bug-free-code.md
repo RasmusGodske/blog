@@ -6,7 +6,7 @@ tags: [Laravel, DevContainer, VSCode, VILT, Inertia.js, Typescript]
 
 ## Introduction
 
-Are you drawn to the autocompletion, type checking, and other benefits TypeScript offers, but dread the thought of integrating it into your Laravel projects? You’re not alone! Many developers hesitate to add TypeScript because it appears complex and time-consuming. However, I’m here to make this process as smooth and hassle-free as possible.
+Ready for a smoother, more productive Laravel development experience? TypeScript can help you build robust, maintainable applications with fewer bugs. In this tutorial, we'll supercharge your Laravel project using Inertia.js and Vue by adding TypeScript to the VILT stack (Vue, Inertia, Laravel, Tailwind CSS) we built in the previous [post](/posts/setting-up-the-perfect-laravel-stack/). Don't worry if you haven't followed along – the concepts here apply to any Laravel project using Inertia.js and Vue!
 
 In this tutorial, we'll dive into how to integrate TypeScript into your Laravel Inertia.js project, a powerful stack combining Laravel with Vue.js, leveraging Inertia.js and Ziggy for routing. Here's what we'll cover:
 
@@ -15,14 +15,11 @@ In this tutorial, we'll dive into how to integrate TypeScript into your Laravel 
 3. **TypeScript in Vue Components:** Implement TypeScript in Vue components to improve reliability and maintainability.
 4. **Optimizing Inertia.js and Ziggy:** Add types to Inertia.js page props and Ziggy routes to prevent typos and errors.
 
-Whether you're starting with a fresh Laravel project or integrating into an existing one, this guide will ensure you get TypeScript up and running with minimal fuss. Let's get started and turbocharge your development experience!
-
-I will be using the [VILT stack](https://viltstack.dev/) as a base for this tutorial. If you want a clean Laravel project, with Inertia.js, Vue.js, and Tailwind CSS, along with a devcontainer for VSCode, you can read my previous post: [Creating the perfect Laravel stack with VSCode DevContainer](/posts/setting-up-the-perfect-laravel-stack/). This will give you a clean Laravel project, with Inertia.js, Vue.js, and Tailwind CSS, along with a devcontainer for VSCode.
-
-## Credits
+## Inpired By
 - [Tanner Campbell](https://tannercampbell.com/using_typescript_with_inertiajs_and_vue/) for the inspiration and the base of this tutorial.
 
 ## Adding TypeScript Support
+
 
 
 ### Step 1: Installing TypeScript Dependencies
@@ -127,7 +124,7 @@ Sometimes VSCode is a bit slow and isn't providing you with any IntelliSense, an
 If this is the case, you should reload your window by pressing: `CTRL+SHIFT+P` and enter `Developer: Reload Window`. This should fix that.
 
 
-## Utililzing Typescript Within Vue Components
+## Using TypeScript within Vue Components
 
 Now that we have added TypeScript support to our project, We can now utilize TypeScript within our Vue.js components. To indicate that a component uses TypeScript, there is one important thing that you might often forget (if you are like me...)
 
@@ -147,6 +144,8 @@ Vue typescript component:
 ... Insert lovely typed code here
 </script>
 ```
+
+*Please note that that `setup` is a new feature in Vue 3, which allows you to write your Vue components in a more functional way. You can read more about it [here](https://vuejs.org/api/composition-api-setup)*.
 
 ### Step 2: Vue Component Typescript Examples
 Let's go through a quick example of how we can harness this newfound power.
@@ -177,7 +176,7 @@ defineProps({
 ```
 {: file='resources/js/Pages/Dashboard.vue'}
 
-This example might not be all that exiting so lets go more crazy with components with custom types like this:
+This example might not be all that exciting so lets go more crazy with components with custom types like this:
 ```vue
 <script setup lang="ts">
 import { defineProps } from 'vue'
@@ -344,7 +343,7 @@ Next we want our intellisense to acknowledge our `route()` function globally wit
 We will create a type declaration file: `vue-ziggy.d.ts` within `resources/js/types`.
 
 ```bash
-code resources/js/types/vue-ziggy.d.ts
+touch resources/js/types/vue-ziggy.d.ts
 ```
 
 Then we add the following.
@@ -400,3 +399,9 @@ And there we go; you now also have types for your Ziggy routes!
 Wrapping up, you've just turbocharged your Laravel Inertia.js project with TypeScript! Not only does this mean fewer sneaky bugs and more straightforward code, but you've also set yourself up for a smoother, more enjoyable development experience. Adding TypeScript brings a whole new level of sophistication and fun to your coding, making it easier to manage and more powerful.
 
 Here's to fewer bugs, cleaner code, and more fun coding sessions ahead! 🚀
+
+## What's Next?
+- Challenge yourself: Experiment with TypeScript in your own projects!
+- Share your experience: Let me know your thoughts and experiences with TypeScript in Laravel.
+- Stay tuned for more: I will be sharing my journey trying to perfect the Laravel stack with TypeScript, hope you will join me!
+
