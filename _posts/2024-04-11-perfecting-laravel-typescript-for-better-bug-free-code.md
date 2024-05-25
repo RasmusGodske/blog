@@ -2,6 +2,8 @@
 title: "Perfecting Laravel: TypeScript for Better, Bug-Free Code"
 categories: [Laravel, Web Development]
 tags: [Laravel, DevContainer, VSCode, VILT, Inertia.js, Typescript]
+image:
+  path: assets/img/adding-typescript-to-vilt-stack/post_logo.png
 ---
 
 ## Introduction
