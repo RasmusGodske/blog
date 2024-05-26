@@ -55,7 +55,8 @@ Add the following:
     "lib": ["esnext", "dom"],
     "types": ["@types/node"],
     "paths": {
-      "@/*": ["./resources/js/*"]
+      "@/*": ["./resources/js/*"],
+      "ziggy-js": ["./vendor/tightenco/ziggy"],
     },
     "outDir": "./public/build/assets"
   },
