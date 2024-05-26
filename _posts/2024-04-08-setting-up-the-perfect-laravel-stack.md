@@ -657,7 +657,7 @@ This tells the system `ziggy-js` can be found in our `vendor/tightenco/ziggy` di
 The neat thing about that is that we don't need to keep any extra node packages updated. Pretty cool right?
 
 
-### Step 4: Include Ziggy vue pligin
+### Step 4: Include Ziggy vue plugin
 
 Next we need to update our `resources/js/app.js` to make use of the Vue plugin which Ziggy provides out of the box.
 
