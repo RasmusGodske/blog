@@ -3,7 +3,7 @@ title: "Securely Expose Your Coolify Apps with the Magic of Cloudflare Tunnels"
 categories: [Coolify, Cloudflare, Self-Hosting]
 tags: [Coolify, Cloudflare, DevOps, Homelab, Cloudflare Tunnels]
 image:
-  path: assets/img/coolify-cloudflare-tunnel/post-logo.jpg
+  path: assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/post-logo.jpg
 ---
 
 ## Introduction
@@ -60,7 +60,7 @@ Before you embark on this self-hosting adventure, make sure you have the followi
 In the Coolify dashboard, click the "New Project" button. Enter a name and an optional description for your project, then click "Continue." You'll be taken to the project dashboard.
 
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/new-project.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/new-project.png)
 _Project creation page_
 
 
@@ -68,28 +68,28 @@ _Project creation page_
 
 You can either create a new environment or use the default "Production" environment. For this tutorial, we'll use "Production." Click on it to open.
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/projects-page.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/projects-page.png)
 _Project/Environments page_
 
 ### 3. Create new resources
 
 Click the "+ Add New Resource" button. Coolify offers a variety of options, from Docker-based applications to one-click services. We'll deploy an [Uptime Kuma](https://github.com/louislam/uptime-kuma) service for this demonstration.
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/new-resource-page.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/new-resource-page.png)
 _Project/Environment/Resource page_
 
 ### 4. Selecting a server
 
 Coolify allows for multiple servers. Choose the default "localhost" server (or your preferred server) and click "Continue."
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/pick-server.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/pick-server.png)
 _Server selection page_
 
 ### 5. Selecting a destination
 
 Destinations help segregate services by network. I will use the default "default" destination and click "Continue."
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/pick-destination.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/pick-destination.png)
 _Destination selection page_
 
 You'll be redirected to the configuration page for your Uptime Kuma service. Before proceeding, let's set up the Cloudflare Tunnel.
@@ -127,15 +127,15 @@ Now that `cloudflared` is installed, let's create our first tunnel:
 **2. Select your account**<br>
 **3. Go to `Networks`*(Left side pannel)* > `Tunnels` > `Create Tunnel`**<br>
 **4. Select `Cloudflared` then press `next`**
-![alt text](../assets/img/coolify-cloudflare-tunnel/cloudflare-dashboard-create-tunnel.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/cloudflare-dashboard-create-tunnel.png)
 _Tunnel Connector Pick Page_
 **5. Enter a name for your tunnel eg. `coolify-tunnel` then click `Save tunnel`**<br>
 *Here it is worth mentioning that you can use the same tunnel for multiple services running on your Coolify server.*
-![alt text](../assets/img/coolify-cloudflare-tunnel/cloudflare-dashboard-tunnel-pick-name.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/cloudflare-dashboard-tunnel-pick-name.png)
 _Cloudflare Tunnel Create Page_
 **8. Next Copy the given command which we will need to execute in out Coolify server**<br>
 *This command will install the cloudflared service on your server and create a tunnel to your Cloudflare account.*
-![alt text](../assets/img/coolify-cloudflare-tunnel/cloudflare-dashboard-configure-page.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/cloudflare-dashboard-configure-page.png)
 _Cloudflare Tunnel configuration page_
 
 
@@ -163,7 +163,7 @@ This command will:
 **1. Go back to the Cloudflare dashboard > `Networks` > `Tunnels`.**<br>
 **2. Verify that your tunnel is listed and its status is "Healthy."**<br>
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/cloudflare-dashboard-tunnel-list-healthy.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/cloudflare-dashboard-tunnel-list-healthy.png)
 _Cloudflare Tunnel list_
 
 Great! Now we have our tunnel setup and running. Next we need to configure our Uptime Kuma service to use the tunnel. In the next steps, we'll configure it to expose your Uptime Kuma service.
@@ -179,7 +179,7 @@ Now that your tunnel is active, you need to create a public hostname that will p
 **1. In the Cloudflare dashboard, go to "Network" -> "Tunnels."**<br>
 **2. Click on your tunnel name (e.g., "coolify-tunnel")**<br>
 **3. In the "Public Hostname" tab, click "+ Add a public hostname."**<br>
-![alt text](../assets/img/coolify-cloudflare-tunnel/cloudflare-dashboard-tunnel-public-hostname.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/cloudflare-dashboard-tunnel-public-hostname.png)
 _Cloudflare Tunnel public hostname tab_
 
 **4. Configure the following settings:**
@@ -189,7 +189,7 @@ _Cloudflare Tunnel public hostname tab_
 - **Service Type**: Choose "HTTP."
 - **Service URL**: Enter http://localhost
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/coudflare-dashboard-tunnel-configure-public-hostname.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/coudflare-dashboard-tunnel-configure-public-hostname.png)
 _Cloudflare Tunnel public hostname configuration_
 
 *Be aware that if you want to use nested subdomain eg. `uptime.kuma.mydomain.com` you need to go through some extra steps and pay for [ACM(Advanced Certificate Manager)](https://www.cloudflare.com/advanced-certificate-manager/) to generate a wildcard certificate for your domain.*
@@ -203,7 +203,7 @@ Before we can actually access our Uptime Kuma service we need to go back to our 
 #### 1. Update Service Domain
 
 **1. In your Coolify dashboard, go to the Uptime Kuma service configuration page.**<br>
-![alt text](../assets/img/coolify-cloudflare-tunnel/service-configuration-page.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/service-configuration-page.png)
 _Service with Default Domains field_
 
 **2. Update the "Domains" field**<br>
@@ -211,7 +211,7 @@ _Service with Default Domains field_
 - Replace the auto-generated domain with the public hostname you just created (e.g., `http://uptime.yourdomain.com:3001`).
 - Ensure the port number (`3001` in this example) matches the port your Uptime Kuma service is listening on.
 - Use the `http://` scheme since Cloudflare Tunnels use HTTP to communicate with your service.
-![alt text](../assets/img/coolify-cloudflare-tunnel/service-configuration-page-configured.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/service-configuration-page-configured.png)
 _Service with updated Domains field_
 
 **3. Save and Deploy**
@@ -223,7 +223,7 @@ _Service with updated Domains field_
 
 Your Uptime Kuma service should now be accessible via the public hostname you created (e.g., http://uptime.yourdomain.com) In my case it is [https://uptime.rasmusgodske.com](https://uptime.rasmusgodske.com).
 
-![alt text](../assets/img/coolify-cloudflare-tunnel/uptime-kuma-accessible.png)
+![alt text](../assets/img/securely-expose-your-coolify-apps-with-the-magic-of-cloudflare-tunnels/uptime-kuma-accessible.png)
 _Uptime Kuma service accessible via public hostname_
 
 
